@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.harp-standard.org/agent-auth/0.1",
+  "title": "HARP agent_auth Metadata Block",
+  "description": "The agent_auth metadata block carried in OAuth authorization-server metadata. Holds the base auth.md registration fields plus the HARP healthcare extension under the harp key.",
+  "type": "object",
+  "properties": {
+    "agent_auth": {
+      "type": "object",
+      "description": "Registration metadata an agent reads to discover endpoints, supported identity types, and the HARP healthcare extension.",
+      "properties": {
+        "skill": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the /auth.md skill manifest."
+        },
+        "identity_endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "Endpoint where an agent posts an identity request to register."
+        },
+        "claim_endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "Endpoint where a human claims an agent-created account."
+        },
+        "events_endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "Endpoint that receives registration-layer security event notifications."
+        },
+        "identity_types_supported": {
+          "type": "array",
+          "description": "Identity request types this service accepts.",
+          "items": {
+            "type": "string",
+            "enum": ["anonymous", "identity_assertion", "service_auth"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "identity_assertion": {
+          "type": "object",
+          "description": "Configuration for the identity_assertion flow.",
+          "properties": {
+            "assertion_types_supported": {
+              "type": "array",
+              "description": "Assertion token types accepted, for example the ID-JAG token type URN.",
+              "items": { "type": "string" },
+              "minItems": 1
+            }
+          },
+          "required": ["assertion_types_supported"],
+          "additionalProperties": false
+        },
+        "events_supported": {
+          "type": "array",
+          "description": "Security event types this service can emit or receive.",
+          "items": { "type": "string", "format": "uri" }
+        },
+        "harp": {
+          "type": "object",
+          "description": "HARP healthcare extension. Present when the service offers the purpose-bound, PHI-aware path.",
+          "properties": {
+            "version": {
+              "type": "string",
+              "description": "HARP profile version this block conforms to."
+            },
+            "baa": {
+              "type": "object",
+              "description": "Business Associate Agreement terms and acceptance endpoint.",
+              "properties": {
+                "required_for_phi": {
+                  "type": "boolean",
+                  "description": "True if a completed BAA acceptance is required before any PHI scope is issued."
+                },
+                "terms_uri": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL of the human-readable BAA terms."
+                },
+                "accept_endpoint": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Endpoint where the controlling organization accepts the BAA programmatically."
+                },
+                "version_hash": {
+                  "type": "string",
+                  "description": "Content hash of the BAA terms, for example sha256:..."
+                }
+              },
+              "required": ["required_for_phi", "terms_uri", "accept_endpoint", "version_hash"],
+              "additionalProperties": false
+            },
+            "identity_proofing": {
+              "type": "object",
+              "description": "NIST SP 800-63 identity assurance and authenticator assurance levels required per scope tier.",
+              "properties": {
+                "deidentified": { "$ref": "#/$defs/assuranceLevel" },
+                "phi_read": { "$ref": "#/$defs/assuranceLevel" },
+                "phi_write": { "$ref": "#/$defs/assuranceLevel" }
+              },
+              "required": ["deidentified", "phi_read", "phi_write"],
+              "additionalProperties": false
+            },
+            "purpose_of_use_supported": {
+              "type": "array",
+              "description": "Purpose-of-use values the service supports.",
+              "items": {
+                "type": "string",
+                "enum": ["TREATMENT", "PAYMENT", "HEALTHCARE_OPERATIONS"]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "scopes": {
+              "type": "array",
+              "description": "Purpose-bound scopes the service offers.",
+              "items": { "$ref": "https://schemas.harp-standard.org/scope/0.1" },
+              "minItems": 1
+            },
+            "autonomy": {
+              "type": "object",
+              "description": "What the service does without a human and what it gates behind human review.",
+              "properties": {
+                "auto": {
+                  "type": "array",
+                  "description": "Scopes or actions the service performs autonomously.",
+                  "items": { "type": "string" }
+                },
+                "human_review_required": {
+                  "type": "array",
+                  "description": "Actions that always require a human reviewer.",
+                  "items": { "type": "string" }
+                },
+                "note": {
+                  "type": "string",
+                  "description": "Free-text note on the autonomy policy."
+                }
+              },
+              "required": ["auto", "human_review_required"],
+              "additionalProperties": false
+            },
+            "delegation": {
+              "type": "object",
+              "description": "How the service carries the delegation chain from organization to agent.",
+              "properties": {
+                "chain_required": {
+                  "type": "boolean",
+                  "description": "True if a full delegation chain must be present on each token."
+                },
+                "claims": {
+                  "type": "array",
+                  "description": "Token claims used to carry delegation, for example act.",
+                  "items": { "type": "string" }
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Delegation format, for example rfc8693 token exchange."
+                }
+              },
+              "required": ["chain_required", "claims", "format"],
+              "additionalProperties": false
+            },
+            "payment_mandates_supported": {
+              "type": "array",
+              "description": "Agent payment mandate protocols the service accepts.",
+              "items": { "type": "string" }
+            },
+            "receipts": {
+              "type": "object",
+              "description": "Verifiable Reasoning Receipt support.",
+              "properties": {
+                "supported": {
+                  "type": "boolean",
+                  "description": "True if the service emits signed receipts for consequential actions."
+                },
+                "format_uri": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL of the receipt format definition."
+                },
+                "verify_uri": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Endpoint where a third party can verify a receipt."
+                }
+              },
+              "required": ["supported"],
+              "additionalProperties": false
+            },
+            "free_tier": {
+              "type": "object",
+              "description": "What an unclaimed or anonymous agent can do with no contract and no PHI.",
+              "properties": {
+                "scopes": {
+                  "type": "array",
+                  "description": "Scopes available on the free tier.",
+                  "items": { "type": "string" }
+                },
+                "data": {
+                  "type": "string",
+                  "description": "Data class available on the free tier, for example synthetic_or_deidentified."
+                },
+                "rate_limit": {
+                  "type": "string",
+                  "description": "Rate limit applied to the free tier, for example 100/day."
+                }
+              },
+              "required": ["scopes", "data"],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "baa",
+            "identity_proofing",
+            "purpose_of_use_supported",
+            "scopes",
+            "autonomy",
+            "delegation",
+            "payment_mandates_supported",
+            "receipts",
+            "free_tier"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "skill",
+        "identity_endpoint",
+        "claim_endpoint",
+        "events_endpoint",
+        "identity_types_supported",
+        "identity_assertion",
+        "harp"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": ["agent_auth"],
+  "additionalProperties": false,
+  "$defs": {
+    "assuranceLevel": {
+      "type": "object",
+      "description": "A pair of NIST SP 800-63 assurance levels: ial (identity) and aal (authenticator).",
+      "properties": {
+        "ial": {
+          "type": "integer",
+          "description": "Identity Assurance Level.",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "aal": {
+          "type": "integer",
+          "description": "Authenticator Assurance Level.",
+          "minimum": 1,
+          "maximum": 3
+        }
+      },
+      "required": ["ial", "aal"],
+      "additionalProperties": false
+    }
+  }
+}

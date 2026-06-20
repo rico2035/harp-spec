@@ -1,0 +1,56 @@
+# HARP reference server: manual flow.
+# Run the server first (pnpm dev), then send these top to bottom.
+# Compatible with the VS Code REST Client extension.
+
+@base = http://localhost:4000
+
+### 1. Discover the manifest
+GET {{base}}/auth.md
+
+### 2. Read Protected Resource Metadata
+GET {{base}}/.well-known/oauth-protected-resource
+
+### 3. Read authorization-server metadata (agent_auth block)
+GET {{base}}/.well-known/oauth-authorization-server
+
+### 4. DEV: mint a test ID-JAG
+# Copy "assertion" from the response into the requests below.
+POST {{base}}/dev/mint-id-jag
+Content-Type: application/json
+
+{ "sub": "user_madison", "org_id": "org_acme", "email_verified": true }
+
+### 5. Register with the ID-JAG (returns a base token, no PHI scopes yet)
+POST {{base}}/agent/identity
+Content-Type: application/json
+
+{ "type": "identity_assertion", "assertion": "PASTE_ASSERTION" }
+
+### 6. Try eligibility with a PHI scope before BAA: expect 403 baa_required
+POST {{base}}/oauth2/token
+Content-Type: application/json
+
+{ "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer", "assertion": "PASTE_ASSERTION", "scope": "rcm.eligibility:read" }
+
+### 7. Accept the BAA for the org
+POST {{base}}/agent/baa/accept
+Content-Type: application/json
+
+{ "org_id": "org_acme", "baa_version_hash": "sha256:demo-baa-v1", "accepted_by": "ric@goneomics.com", "signature": "demo-sig" }
+
+### 8. Exchange again, now with BAA accepted: returns a PHI-scoped token
+POST {{base}}/oauth2/token
+Content-Type: application/json
+
+{ "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer", "assertion": "PASTE_ASSERTION", "scope": "rcm.eligibility:read" }
+
+### 9. Call the protected resource with the PHI-scoped token
+GET {{base}}/eligibility?member=demo-member
+Authorization: Bearer PASTE_ACCESS_TOKEN
+x-harp-purpose-of-use: PAYMENT
+
+### 10. Verify the receipt returned in step 9
+POST {{base}}/agent/receipt/verify
+Content-Type: application/json
+
+{ "receipt": PASTE_RECEIPT_OBJECT }

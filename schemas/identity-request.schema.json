@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.harp-standard.org/identity-request/0.1",
+  "title": "HARP Identity Request",
+  "description": "Request body posted to the identity_endpoint to register an agent. The type field selects one of the three flows: anonymous, identity_assertion, or service_auth.",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "Anonymous request",
+      "description": "Deferred ownership. Returns a pre-claim token limited to the free tier; a human claims the account later.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "anonymous",
+          "description": "Selects the anonymous flow."
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    {
+      "title": "Identity assertion request",
+      "description": "ID-JAG flow. The agent presents an audience-specific assertion from its provider; the service verifies it and mints a scoped token. Synchronous, no human.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "identity_assertion",
+          "description": "Selects the identity_assertion flow."
+        },
+        "assertion": {
+          "type": "string",
+          "description": "The ID-JAG assertion token, urn:ietf:params:oauth:token-type:id-jag."
+        }
+      },
+      "required": ["type", "assertion"],
+      "additionalProperties": false
+    },
+    {
+      "title": "Service auth request",
+      "description": "Verified-email flow. The agent supplies a login hint, the user verifies at a verification_uri, and the agent polls the token endpoint until granted.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "service_auth",
+          "description": "Selects the service_auth flow."
+        },
+        "login_hint": {
+          "type": "string",
+          "description": "Email address used to reach the human who must verify."
+        }
+      },
+      "required": ["type", "login_hint"],
+      "additionalProperties": false
+    }
+  ]
+}

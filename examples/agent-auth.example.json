@@ -1,0 +1,58 @@
+{
+  "agent_auth": {
+    "skill": "https://api.goneomics.com/auth.md",
+    "identity_endpoint": "https://auth.goneomics.com/agent/identity",
+    "claim_endpoint": "https://auth.goneomics.com/agent/identity/claim",
+    "events_endpoint": "https://auth.goneomics.com/agent/event/notify",
+    "identity_types_supported": ["anonymous", "identity_assertion", "service_auth"],
+    "identity_assertion": {
+      "assertion_types_supported": ["urn:ietf:params:oauth:token-type:id-jag"]
+    },
+    "events_supported": [
+      "https://schemas.harp-standard.org/events/identity/assertion/revoked"
+    ],
+    "harp": {
+      "version": "0.1",
+      "baa": {
+        "required_for_phi": true,
+        "terms_uri": "https://api.goneomics.com/legal/baa",
+        "accept_endpoint": "https://auth.goneomics.com/agent/baa/accept",
+        "version_hash": "sha256:3b7c1f9a8d2e4c6b0a5f1e9d7c3b2a4f6e8d0c1b3a5f7e9d2c4b6a8f0e1d3c5b"
+      },
+      "identity_proofing": {
+        "deidentified": { "ial": 1, "aal": 1 },
+        "phi_read": { "ial": 2, "aal": 2 },
+        "phi_write": { "ial": 2, "aal": 2 }
+      },
+      "purpose_of_use_supported": ["TREATMENT", "PAYMENT", "HEALTHCARE_OPERATIONS"],
+      "scopes": [
+        { "name": "rcm.eligibility:read", "purpose": "PAYMENT", "phi": true, "min_necessary": "coverage" },
+        { "name": "rcm.claims:read", "purpose": "PAYMENT", "phi": true, "min_necessary": "claim" },
+        { "name": "rcm.claims:write", "purpose": "PAYMENT", "phi": true, "min_necessary": "claim" },
+        { "name": "rcm.denials:work", "purpose": "PAYMENT", "phi": true, "min_necessary": "claim,clinical_excerpt" },
+        { "name": "rcm.collections:negotiate", "purpose": "PAYMENT", "phi": true, "min_necessary": "balance" }
+      ],
+      "autonomy": {
+        "auto": ["rcm.eligibility:read", "rcm.claims:read", "rcm.denials:work"],
+        "human_review_required": ["medical_necessity_denial"],
+        "note": "Human-review actions follow applicable state law and tenant policy."
+      },
+      "delegation": {
+        "chain_required": true,
+        "claims": ["act"],
+        "format": "rfc8693"
+      },
+      "payment_mandates_supported": ["ap2", "stripe-acp", "x402"],
+      "receipts": {
+        "supported": true,
+        "format_uri": "https://schemas.harp-standard.org/receipt/0.1",
+        "verify_uri": "https://api.goneomics.com/agent/receipt/verify"
+      },
+      "free_tier": {
+        "scopes": ["rcm.eligibility:read"],
+        "data": "synthetic_or_deidentified",
+        "rate_limit": "100/day"
+      }
+    }
+  }
+}

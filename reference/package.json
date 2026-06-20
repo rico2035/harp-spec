@@ -1,0 +1,25 @@
+{
+  "name": "@harp-standard/reference-server",
+  "version": "0.1.0",
+  "description": "Minimal runnable HARP-compliant reference server.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "demo": "tsx examples/demo.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@harp-standard/sdk": "file:../sdks/typescript",
+    "express": "^4.21.1",
+    "jose": "^5.9.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

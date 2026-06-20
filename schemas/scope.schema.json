@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.harp-standard.org/scope/0.1",
+  "title": "HARP Scope",
+  "description": "A single purpose-bound scope offered by a HARP service. Each scope ties an access grant to a purpose of use and the minimum data class needed to perform it.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Scope identifier in resource.area:action form, for example rcm.eligibility:read.",
+      "pattern": "^[a-z0-9_.]+:[a-z0-9_]+$"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Purpose of use this scope is bound to.",
+      "enum": ["TREATMENT", "PAYMENT", "HEALTHCARE_OPERATIONS"]
+    },
+    "phi": {
+      "type": "boolean",
+      "description": "True if exercising this scope can touch protected health information. PHI scopes require a completed BAA acceptance before issuance."
+    },
+    "min_necessary": {
+      "type": "string",
+      "description": "Minimum-necessary data class or comma-separated classes this scope exposes, for example coverage, claim, or claim,clinical_excerpt."
+    }
+  },
+  "required": ["name", "purpose", "phi", "min_necessary"],
+  "additionalProperties": false
+}

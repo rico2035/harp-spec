@@ -1,0 +1,19 @@
+{
+  "receipt_id": "rcpt_9f24c7a1e0b34d58",
+  "action": "denial.appeal.submitted",
+  "actor": {
+    "agent_id": "agent_nova_rcm_01HZ",
+    "delegation_chain": ["org:acme-health-rcm", "workforce_member:j.rivera", "agent:agent_nova_rcm_01HZ"]
+  },
+  "purpose_of_use": "PAYMENT",
+  "inputs_digest": "sha256:c2f4a6e8d0b1937455aa6cd31e8f0a2b4c6d8e0f1a3b5c7d9e1f2a4b6c8d0e2f",
+  "policy_applied": "policy:rcm/denials@v3",
+  "model": "rcm-reasoner@2026.06",
+  "evidence": [
+    { "source": "payer-policy:aetna/cpt-97110", "ref": "section-4.2-medical-necessity" },
+    { "source": "cms-ncd:160.12", "ref": "coverage-criteria" }
+  ],
+  "conclusion": "Denial reversed on appeal. Submitted with documentation supporting medical necessity under the payer policy and the CMS national coverage determination.",
+  "issued_at": "2026-06-17T14:22:09Z",
+  "signature": "MEUCIQDk8h2vT0pQ7nXmZ5wR1cFqN3bYpL9aJ4sH6dG2eK0fAiEA1bC7xY9wQ2mZ8nR4tV6uP0oS3iH5gJ7kL2mN9cD4eF1gH"
+}

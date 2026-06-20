@@ -1,0 +1,23 @@
+{
+  "name": "@harp-standard/conformance",
+  "version": "0.1.0",
+  "description": "Public conformance test suite for the HARP open standard (Healthcare Agent Registration and Connection Profile). Zero runtime dependencies; uses Node 18+ built-in fetch.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "harp-conformance": "./runner.mjs"
+  },
+  "scripts": {
+    "start": "node runner.mjs",
+    "test:reference": "node runner.mjs http://localhost:4000"
+  },
+  "files": [
+    "runner.mjs",
+    "lib",
+    "fixtures",
+    "README.md"
+  ]
+}

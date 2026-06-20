@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.harp-standard.org/baa-acceptance-event/0.1",
+  "title": "HARP BAA Acceptance Event",
+  "description": "A signed, append-only record that an agent's controlling organization accepted the Business Associate Agreement. PHI scopes remain unobtainable until this event completes. Combines the POST /agent/baa/accept request fields with the issued acceptance result.",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Identifier of the controlling organization that accepts the BAA."
+    },
+    "baa_version_hash": {
+      "type": "string",
+      "description": "Content hash of the accepted BAA terms, matching agent_auth.harp.baa.version_hash, for example sha256:..."
+    },
+    "accepted_by": {
+      "type": "string",
+      "description": "Identifier of the workforce member or principal who accepted on behalf of the organization."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Signature over the acceptance payload, binding org, version, and acceptor."
+    },
+    "baa_acceptance_id": {
+      "type": "string",
+      "description": "Identifier assigned to the recorded acceptance event."
+    },
+    "scopes_unlocked": {
+      "type": "array",
+      "description": "PHI scopes that become obtainable once this acceptance completes.",
+      "items": { "type": "string" }
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp the acceptance was recorded, in RFC 3339 form."
+    }
+  },
+  "required": [
+    "org_id",
+    "baa_version_hash",
+    "accepted_by",
+    "signature",
+    "baa_acceptance_id",
+    "scopes_unlocked"
+  ],
+  "additionalProperties": false
+}

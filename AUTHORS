@@ -1,0 +1,9 @@
+HARP: Healthcare Agent Registration and Connection Profile
+
+Author and architect
+  Ric S Kolluri, Founder and CIO, Neomics
+
+HARP was designed, authored, and architected by Ric S Kolluri. Neomics is the
+originating organization and the reference implementer. The standard is released
+under the MIT License (see LICENSE) and is governed by an open RFC process with a
+committed path to a neutral standards body (see GOVERNANCE.md).

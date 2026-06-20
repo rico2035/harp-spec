@@ -1,0 +1,21 @@
+{
+  "_comment": "Synthetic, fictional test inputs for the HARP conformance suite. No PHI. The reference server in ../reference ships a dev ID-JAG minter at POST /dev/mint-id-jag, so the suite mints a trusted assertion at run time rather than hardcoding a signed token. For a third-party service you certify, replace org_id / accepted_by / login_hint and supply your own trusted ID-JAG issuer per CONFORMANCE.md section 'How to self-certify', step 3.",
+
+  "org_id": "org_conformance_demo",
+  "accepted_by": "tester@example.org",
+  "login_hint": "tester@example.org",
+  "subject": "user_synthetic_001",
+
+  "baa_version_hash": "sha256:demo-baa-v1",
+  "stale_baa_version_hash": "sha256:stale-baa-v0",
+
+  "phi_scope": "rcm.eligibility:read",
+  "protected_resource_path": "/eligibility?member=synthetic-member-001",
+
+  "dev_mint_id_jag_path": "/dev/mint-id-jag",
+
+  "_notes": {
+    "phi_scope": "A PHI scope offered by the reference server. The suite reads the live scope list from discovery and overrides this if it is not offered.",
+    "protected_resource_path": "The reference server exposes /eligibility guarded by the phi_scope. A third-party service supplies its own protected path."
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.harp-standard.org/receipt/0.1",
+  "title": "HARP Verifiable Reasoning Receipt",
+  "description": "A signed record of a consequential agent action. A third party can verify the signature and the applied policy version without trusting the issuer. The receipt references digests, never raw PHI.",
+  "type": "object",
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "description": "Unique identifier for this receipt."
+    },
+    "action": {
+      "type": "string",
+      "description": "Action performed, in dotted form, for example denial.appeal.submitted."
+    },
+    "actor": {
+      "type": "object",
+      "description": "The agent that performed the action and its delegation chain.",
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "description": "Identifier of the acting agent."
+        },
+        "delegation_chain": {
+          "type": "array",
+          "description": "Ordered chain from the controlling organization down to the agent.",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      },
+      "required": ["agent_id", "delegation_chain"],
+      "additionalProperties": false
+    },
+    "purpose_of_use": {
+      "type": "string",
+      "description": "Purpose of use under which the action was taken.",
+      "enum": ["TREATMENT", "PAYMENT", "HEALTHCARE_OPERATIONS"]
+    },
+    "inputs_digest": {
+      "type": "string",
+      "description": "Hash of the inputs to the action, not the PHI itself, for example sha256:..."
+    },
+    "policy_applied": {
+      "type": "string",
+      "description": "Identifier and version of the policy applied, for example policy:rcm/denials@v3."
+    },
+    "model": {
+      "type": "string",
+      "description": "Model identifier that produced the decision, for example rcm-reasoner@2026.06."
+    },
+    "evidence": {
+      "type": "array",
+      "description": "References to evidence the decision relied on. Each entry points to a source and a reference, never raw PHI.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Evidence source identifier, for example payer-policy:..."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Reference within the source."
+          }
+        },
+        "required": ["source", "ref"],
+        "additionalProperties": false
+      }
+    },
+    "conclusion": {
+      "type": "string",
+      "description": "The decision or outcome the agent reached."
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp the receipt was issued, in RFC 3339 form."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Detached signature over the receipt contents."
+    }
+  },
+  "required": [
+    "receipt_id",
+    "action",
+    "actor",
+    "purpose_of_use",
+    "inputs_digest",
+    "policy_applied",
+    "model",
+    "evidence",
+    "conclusion",
+    "issued_at",
+    "signature"
+  ],
+  "additionalProperties": false
+}
