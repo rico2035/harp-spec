@@ -161,6 +161,22 @@ async function main(): Promise<void> {
     const body = req.body as Record<string, unknown>;
     const orgId = String(body.org_id ?? "");
     if (!orgId) return fail(res, 400, "invalid_request", "org_id is required.");
+    if (!body.accepted_by || !body.signature) {
+      return fail(res, 400, "invalid_request", "accepted_by and signature are required.");
+    }
+
+    // Acceptance binds to the current BAA terms. A stale or mismatched hash is
+    // rejected with a self-healing body pointing at the current version.
+    const currentHash = cfg.agentAuth.harp.baa.version_hash;
+    if (body.baa_version_hash !== currentHash) {
+      return res.status(400).json({
+        error: "stale_baa_version",
+        error_description:
+          "baa_version_hash does not match the current BAA terms. Re-read the manifest and accept the current version.",
+        current_version_hash: currentHash,
+        terms_uri: cfg.agentAuth.harp.baa.terms_uri,
+      });
+    }
 
     const acceptanceId = `baa_${randomUUID()}`;
     store.recordBaa({
@@ -301,7 +317,8 @@ async function main(): Promise<void> {
   });
 
   app.get("/dev/verify", (req: Request, res: Response) => {
-    const code = String(req.query.code ?? "");
+    // User codes are alphanumeric; strip anything else before rendering HTML.
+    const code = String(req.query.code ?? "").replace(/[^A-Za-z0-9-]/g, "");
     res
       .type("html")
       .send(

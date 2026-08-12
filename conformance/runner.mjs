@@ -397,8 +397,9 @@ async function categoryBaaGate(fixtures, schemas, registry) {
   if (!stale.res.ok) {
     record("baa", "stale baa_version_hash is rejected", PASS);
   } else if (expectedHash && fixtures.stale_baa_version_hash !== expectedHash && stale.json) {
-    // The reference server accepts any hash at v0.1; flag as MANUAL so the
-    // implementer confirms their service binds acceptance to the current hash.
+    // The service returned 200 for a hash that differs from its published
+    // version_hash. It may still bind acceptance elsewhere, so flag as MANUAL
+    // for the implementer to confirm rather than failing outright.
     record(
       "baa",
       "stale baa_version_hash is rejected",
