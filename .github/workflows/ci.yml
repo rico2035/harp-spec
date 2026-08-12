@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  conformance:
+    name: Build, typecheck, and run the conformance suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the SDK
+        working-directory: sdks/typescript
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm typecheck
+          pnpm build
+
+      - name: Typecheck the reference server
+        working-directory: reference
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm typecheck
+
+      - name: Start the reference server
+        working-directory: reference
+        run: |
+          nohup pnpm start > server.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:4000/auth.md > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Reference server did not start:"
+          cat server.log
+          exit 1
+
+      - name: Run the conformance suite (core + receipts)
+        run: node conformance/runner.mjs http://localhost:4000 --receipts
