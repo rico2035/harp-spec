@@ -3,7 +3,8 @@
 ### Created and architected by Ric S Kolluri, Founder and CIO of Neomics
 
 - **Author and architect:** Ric S Kolluri, Founder and CIO, Neomics
-- **Version:** 0.1 (draft)
+- **Version:** 0.1.2 (draft; the wire-level profile version is 0.1)
+- **CI:** [![CI](https://github.com/rico2035/harp-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/rico2035/harp-spec/actions/workflows/ci.yml)
 - **Status:** Open standard, published for public review and adoption
 - **License:** MIT with an attribution requirement. Adopters must credit HARP and its author, Ric S Kolluri (Neomics). See [LICENSE](LICENSE).
 

@@ -1,6 +1,6 @@
 {
   "name": "@harp-standard/conformance",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Public conformance test suite for the HARP open standard (Healthcare Agent Registration and Connection Profile). Zero runtime dependencies; uses Node 18+ built-in fetch.",
   "license": "MIT",
   "type": "module",
@@ -19,5 +19,10 @@
     "lib",
     "fixtures",
     "README.md"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rico2035/harp-spec.git",
+    "directory": "conformance"
+  }
 }

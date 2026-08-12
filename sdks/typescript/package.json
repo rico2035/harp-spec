@@ -1,6 +1,6 @@
 {
   "name": "@harp-standard/sdk",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "TypeScript SDK for HARP, the Healthcare Agent Registration and Connection Profile. Client and server helpers.",
   "license": "MIT",
   "type": "module",
@@ -12,18 +12,35 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "src", "README.md"],
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "clean": "rimraf dist"
   },
-  "keywords": ["harp", "agent", "healthcare", "oauth", "id-jag", "mcp", "auth.md"],
+  "keywords": [
+    "harp",
+    "agent",
+    "healthcare",
+    "oauth",
+    "id-jag",
+    "mcp",
+    "auth.md"
+  ],
   "dependencies": {
     "jose": "^5.9.6"
   },
   "devDependencies": {
     "typescript": "^5.6.3",
     "rimraf": "^6.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rico2035/harp-spec.git",
+    "directory": "sdks/typescript"
   }
 }
