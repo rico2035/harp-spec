@@ -182,8 +182,10 @@ export class HarpClient {
   }
 
   /**
-   * Verify a Verifiable Reasoning Receipt signature against a public key (PEM
-   * SPKI). The signature covers the receipt with the signature field removed.
+   * Verify a Verifiable Reasoning Receipt against a public key (PEM SPKI).
+   * The signature covers the receipt with the signature field removed, so the
+   * outer fields must equal the signed embedded content: a genuine signature
+   * attached to altered outer fields is not a valid receipt.
    */
   async verifyReceipt(
     receipt: Receipt,
@@ -192,8 +194,12 @@ export class HarpClient {
   ): Promise<boolean> {
     try {
       const key = await importSPKI(publicKeyPem, alg);
-      await jwtVerify(receipt.signature, key);
-      return true;
+      const { payload } = await jwtVerify(receipt.signature, key);
+      const embedded = (payload as { receipt?: Omit<Receipt, "signature"> })
+        .receipt;
+      if (!embedded) return false;
+      const { signature: _signature, ...outer } = receipt;
+      return stableStringify(outer) === stableStringify(embedded);
     } catch {
       return false;
     }
@@ -224,4 +230,18 @@ export class HarpClient {
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** JSON.stringify with object keys sorted, so key order never affects equality. */
+function stableStringify(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+  if (value !== null && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      .map(([k, v]) => `${JSON.stringify(k)}:${stableStringify(v)}`);
+    return `{${entries.join(",")}}`;
+  }
+  return JSON.stringify(value);
 }
