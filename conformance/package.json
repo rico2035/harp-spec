@@ -1,6 +1,6 @@
 {
   "name": "@harp-standard/conformance",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Public conformance test suite for the HARP open standard (Healthcare Agent Registration and Connection Profile). Zero runtime dependencies; uses Node 18+ built-in fetch.",
   "license": "MIT",
   "type": "module",

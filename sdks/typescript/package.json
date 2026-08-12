@@ -1,6 +1,6 @@
 {
   "name": "@harp-standard/sdk",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "TypeScript SDK for HARP, the Healthcare Agent Registration and Connection Profile. Client and server helpers.",
   "license": "MIT",
   "type": "module",

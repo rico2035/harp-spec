@@ -3,7 +3,7 @@
 ### Created and architected by Ric S Kolluri, Founder and CIO of Neomics
 
 - **Author and architect:** Ric S Kolluri, Founder and CIO, Neomics
-- **Version:** 0.1.2 (draft; the wire-level profile version is 0.1)
+- **Version:** 0.1.3 (draft; the wire-level profile version is 0.1)
 - **CI:** [![CI](https://github.com/rico2035/harp-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/rico2035/harp-spec/actions/workflows/ci.yml)
 - **Status:** Open standard, published for public review and adoption
 - **License:** MIT with an attribution requirement. Adopters must credit HARP and its author, Ric S Kolluri (Neomics). See [LICENSE](LICENSE).
@@ -132,7 +132,10 @@ Carried in the OAuth authorization-server metadata. Base auth.md fields plus the
         "version_hash": "sha256:..."
       },
       "identity_proofing": {
-        // NIST SP 800-63 levels required per scope tier
+        // NIST SP 800-63-4 levels required per scope tier. Under revision 4,
+        // the deidentified tier means: no identity proofing required, AAL1
+        // authentication. (An eIDAS expression of these tiers is proposed in
+        // RFC 0001 for EU deployments.)
         "deidentified": { "ial": 1, "aal": 1 },
         "phi_read":     { "ial": 2, "aal": 2 },
         "phi_write":    { "ial": 2, "aal": 2 }
@@ -219,6 +222,8 @@ POST /agent/baa/accept
 
 The acceptance is recorded as a signed, append-only event. PHI scopes remain unobtainable until it completes. To our knowledge, making BAA acceptance part of the machine registration handshake is new.
 
+Two conditions make the handshake legally meaningful, and both are the deploying parties' responsibility: the document at `terms_uri` must be a complete BAA containing the provisions 45 CFR 164.504(e)(2) requires, and `accepted_by` must be a person with authority to bind the controlling organization, identity-proofed at the service's `phi_write` tier or above. The agent cannot accept a BAA for its organization. See `COMPLIANCE.md` for the full mapping.
+
 ---
 
 ## Verifiable Reasoning Receipts
@@ -241,7 +246,9 @@ For any consequential action, a HARP service can emit a signed receipt:
 }
 ```
 
-Anyone holding the receipt can verify the signature and the policy/version at `verify_uri` without trusting the issuer. The receipt references digests, never raw PHI.
+Anyone holding the receipt can verify the signature and the policy/version at `verify_uri` without trusting the issuer. Receipts and audit events must not contain direct identifiers or clinical content: they carry pseudonymous subject references and digests only, with any resolution mapping held separately by the controlling organization. This keeps the append-only chain intact while erasure obligations (such as GDPR Art. 17) are satisfiable by deleting the mapping.
+
+All HARP flows (discovery, registration, agreement acceptance, token exchange, resource calls, receipt verification) require TLS 1.2 or later. A service must not serve any HARP endpoint over plaintext HTTP outside local development.
 
 ---
 
@@ -257,6 +264,7 @@ A service is **HARP-compliant** if it meets the conformance criteria described i
 README.md      the specification (this document)
 EXPLAINER.md   one-page overview for healthcare leaders
 QUICKSTART.md  two-track implementation guide
+COMPLIANCE.md  informative mapping to HIPAA, GDPR, EHDS, eIDAS, and the EU AI Act
 /schemas       JSON Schemas for agent_auth, scopes, receipts, BAA events
 /reference     a minimal runnable HARP-compliant server
 /sdks          TypeScript client + server SDK (Python planned)

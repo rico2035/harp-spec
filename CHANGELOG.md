@@ -2,6 +2,20 @@
 
 All notable changes to HARP (Healthcare Agent Registration and Connection Profile) are recorded here. The format follows Keep a Changelog, and HARP versions follow SemVer as described in `GOVERNANCE.md` section 5. Each version is tagged in the repository and matched by a versioned conformance suite.
 
+## [0.1.3] - 2026-08-13
+
+Compliance release: a researched mapping of HARP onto US and EU healthcare regulation, plus spec clarifications. The wire-level profile version stays `0.1`; schemas are unchanged. Normative multi-jurisdiction fields are proposed, not shipped: they are in RFC 0001 for public review per `GOVERNANCE.md`.
+
+### Added
+- `COMPLIANCE.md`: informative mapping of HARP v0.1.x to HIPAA (the 164.504(e) BAA provisions, 164.312 technical safeguards, minimum necessary, accounting, the January 2025 Security Rule NPRM as design-ahead), GDPR (dual legal basis, Art. 28 DPA beside the BAA, Art. 22 automated decisions, erasure-by-design for receipts, Chapter V transfers), EHDS and eIDAS timelines and identity bindings, and the EU AI Act (Art. 50 in force now; the high-risk regime deferred to December 2027), with dated watch items. Backed by a 4-lane, 70+ source research pass (2026-08-12).
+- RFC 0001 (draft, normative, for v0.2): typed agreements carrying a GDPR DPA through the same acceptance flow as the BAA, per-grant legal-basis declarations, per-trust-framework identity-proofing bindings (NIST SP 800-63-4 and eIDAS), HL7 PurposeOfUse codes including a receipted break-glass path, an extended autonomy block (decision-effect classification, GDPR Art. 22(4) validation, oversight and halt channels, EU AI Act risk classification), a residency and transfer block, and receipt lifecycle rules.
+
+### Changed (spec clarifications, no wire change)
+- Identity proofing pins NIST SP 800-63-4; the `deidentified` tier is clarified as "no identity proofing required, AAL1 authentication" under revision 4's redefinition of IAL1.
+- All HARP flows require TLS 1.2 or later. Transmission security was assumed but never stated.
+- Receipts and audit events must not contain direct identifiers or clinical content: pseudonymous references and digests only, with resolution mappings held off-log. This states the existing design intent as a rule.
+- The BAA section states the two conditions that make machine acceptance legally meaningful: complete terms per 45 CFR 164.504(e)(2) at `terms_uri`, and acceptance by a person with authority to bind the organization.
+
 ## [0.1.2] - 2026-08-12
 
 Patch release: implementation and tooling fixes plus continuous verification. No normative spec changes. The wire-level profile version (`agent_auth.harp.version`) stays `0.1`, and the conformance suite version is unchanged.
